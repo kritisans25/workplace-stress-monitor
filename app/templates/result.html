@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Stress Assessment Result</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        ul {
+            line-height: 1.8;
+        }
+
+        .nav-links a {
+            margin-right: 15px;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Your Stress Assessment Result</h2>
+
+        <p><strong>Stress Level:</strong> {{ stress_level }}</p>
+        <p><strong>Stress Score:</strong> {{ stress_score }}</p>
+        <p><strong>Stress Trend:</strong> {{ stress_trend }}</p>
+
+        <h3>Dimension Breakdown</h3>
+        <ul>
+            {% for key, value in dimensions.items() %}
+            <li>{{ key }}: {{ value }}</li>
+            {% endfor %}
+        </ul>
+
+        <h3>Explanation</h3>
+        <p>{{ explanation }}</p>
+
+        <h3>Suggestions</h3>
+        <ul>
+            {% for s in suggestions %}
+            <li>{{ s }}</li>
+            {% endfor %}
+        </ul>
+
+        <hr>
+
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}">Go to Dashboard</a>
+            <a href="{{ url_for('assessment') }}">Retake Assessment</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

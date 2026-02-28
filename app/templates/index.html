@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Workplace Stress Assessment</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+
+        .top-bar {
+            margin-bottom: 20px;
+        }
+
+        .top-bar a {
+            margin-right: 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .question {
+            margin-bottom: 15px;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-bar">
+        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <div class="container">
+        <h2>Workplace Stress Assessment</h2>
+
+        <form action="{{ url_for('predict') }}" method="POST">
+
+            {% for i in range(1, 16) %}
+            <div class="question">
+                <label>
+                    Q{{ i }}.
+                    {% if i == 1 %} How often do you feel overwhelmed by your workload?
+                    {% elif i == 2 %} How often do tight deadlines cause you stress?
+                    {% elif i == 3 %} How often do you feel pressured to work faster than comfortable?
+                    {% elif i == 4 %} How often do you feel physically exhausted after work?
+                    {% elif i == 5 %} How often do you experience poor sleep due to work?
+                    {% elif i == 6 %} How often do you feel body discomfort during workdays?
+                    {% elif i == 7 %} How often do you find it hard to concentrate?
+                    {% elif i == 8 %} How often do you feel mentally drained?
+                    {% elif i == 9 %} How often do you struggle to make decisions?
+                    {% elif i == 10 %} How often do you feel anxious because of work?
+                    {% elif i == 11 %} How often do you feel irritable or frustrated?
+                    {% elif i == 12 %} How often do you feel emotionally drained?
+                    {% elif i == 13 %} How often does work interfere with your personal life?
+                    {% elif i == 14 %} How often do you feel unable to relax after work?
+                    {% elif i == 15 %} How often do you feel you lack time for yourself?
+                    {% endif %}
+                </label>
+
+                <select name="Q{{ i }}" required>
+                    <option value="0">Never</option>
+                    <option value="1">Rarely</option>
+                    <option value="2">Sometimes</option>
+                    <option value="3">Often</option>
+                    <option value="4">Always</option>
+                </select>
+            </div>
+            {% endfor %}
+
+            <button type="submit">Submit Assessment</button>
+        </form>
+    </div>
+
+</body>
+
+</html>

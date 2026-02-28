@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User Dashboard</title>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+        }
+
+        h2 {
+            margin-top: 10px;
+        }
+
+        h3 {
+            margin-top: 30px;
+        }
+
+        .top-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            margin-right: 15px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .google-btn {
+            background: #4285F4;
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        .connected {
+            margin-left: 10px;
+            color: green;
+            font-weight: bold;
+        }
+
+        .alert {
+            background: #ffe0e0;
+            border-left: 6px solid #d9534f;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .chart-box {
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f5f5f5;
+        }
+
+        .trend {
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .trend span {
+            color: #d9534f;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- TOP BAR -->
+        <div class="top-actions">
+            <div>
+                <a href="{{ url_for('google_connect') }}" class="google-btn">
+                    🔗 Connect Google Fit
+                </a>
+
+                {% if session.get("google_access_token") %}
+                <span class="connected">✅ Google Fit Connected</span>
+                {% endif %}
+            </div>
+
+            <div class="nav">
+                <a href="{{ url_for('assessment') }}">Take New Assessment</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            </div>
+        </div>
+
+        <!-- ALERT -->
+        {% if session.get("alert") %}
+        <div class="alert">
+            {{ session.pop("alert") }}
+        </div>
+        {% endif %}
+
+        <!-- TITLE -->
+        <h2>Your Stress Dashboard</h2>
+
+        <p class="trend">
+            Current Stress Trend:
+            <span>{{ stress_trend }}</span>
+        </p>
+
+        <!-- STRESS GRAPH -->
+        <h3>Stress Trend Over Time</h3>
+
+        {% if scores|length > 1 %}
+        <div class="chart-box">
+            <canvas id="stressChart"></canvas>
+        </div>
+        {% else %}
+        <p>Not enough data to display stress trend graph.</p>
+        {% endif %}
+
+        <!-- HEART RATE GRAPH -->
+        <h3>Heart Rate Trend (Google Fit)</h3>
+
+        {% if heart_rates and heart_rates|length > 1 %}
+        <div class="chart-box">
+            <canvas id="heartRateChart"></canvas>
+        </div>
+        {% else %}
+        <p>No sufficient heart rate data yet.</p>
+        {% endif %}
+
+        <!-- STRESS HISTORY -->
+        <h3>Stress History</h3>
+
+        {% if history %}
+        <table>
+            <tr>
+                <th>Date & Time</th>
+                <th>Stress Score</th>
+                <th>Stress Level</th>
+            </tr>
+
+            {% for row in history %}
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% else %}
+        <p>No stress records yet.</p>
+        {% endif %}
+
+    </div>
+
+    <!-- STRESS GRAPH SCRIPT -->
+    {% if scores|length > 1 %}
+    <script>
+        new Chart(document.getElementById("stressChart"), {
+            type: "line",
+            data: {
+                labels: {{ timestamps | tojson }},
+            datasets: [{
+                label: "Stress Score",
+                data: {{ scores | tojson }},
+            borderWidth: 2,
+            tension: 0.3,
+            pointRadius: 4
+        }]
+    },
+            options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+});
+    </script>
+    {% endif %}
+
+    <!-- HEART RATE GRAPH SCRIPT -->
+    {% if heart_rates and heart_rates|length > 1 %}
+    <script>
+        new Chart(document.getElementById("heartRateChart"), {
+            type: "line",
+            data: {
+                labels: {{ hr_timestamps | tojson }},
+            datasets: [{
+                label: "Heart Rate (BPM)",
+                data: {{ heart_rates | tojson }},
+            borderWidth: 2,
+            tension: 0.3,
+            borderColor: "#e74c3c",
+            pointRadius: 4
+        }]
+    },
+            options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: false }
+            }
+        }
+});
+    </script>
+    {% endif %}
+
+</body>
+
+</html>
