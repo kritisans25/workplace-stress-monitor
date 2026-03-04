@@ -1,6 +1,17 @@
-def detect_heart_rate_spike(recent_rates, current_rate):
-    if len(recent_rates) < 5:
+def detect_heart_rate_spike(previous, current):
+
+    if not previous:
         return False
 
-    avg = sum(recent_rates) / len(recent_rates)
-    return current_rate > avg + 20
+    avg = sum(previous) / len(previous)
+
+    # Condition 1: Sudden jump from last reading
+    sudden_jump = current - previous[-1] >= 20
+
+    # Condition 2: High abnormal value
+    abnormal_level = current >= 100
+
+    # Condition 3: Significant increase from average
+    above_average = current >= avg + 15
+
+    return sudden_jump or abnormal_level or above_average

@@ -1,9 +1,11 @@
 <!DOCTYPE html>
+
 <html>
 
 <head>
     <title>User Dashboard</title>
 
+    ```
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -99,10 +101,13 @@
             color: #d9534f;
         }
     </style>
+    ```
+
 </head>
 
 <body>
 
+    ```
     <div class="container">
 
         <!-- TOP BAR -->
@@ -124,9 +129,9 @@
         </div>
 
         <!-- ALERT -->
-        {% if session.get("alert") %}
+        {% if alert %}
         <div class="alert">
-            {{ session.pop("alert") }}
+            {{ alert }}
         </div>
         {% endif %}
 
@@ -156,6 +161,9 @@
         <div class="chart-box">
             <canvas id="heartRateChart"></canvas>
         </div>
+
+        <p><b>Latest Heart Rate:</b> {{ heart_rates[-1] }} BPM</p>
+
         {% else %}
         <p>No sufficient heart rate data yet.</p>
         {% endif %}
@@ -197,16 +205,17 @@
                 data: {{ scores | tojson }},
             borderWidth: 2,
             tension: 0.3,
-            pointRadius: 4
-        }]
-    },
+            pointRadius: 4,
+            borderColor: "#3498db"
+            }]
+        },
             options: {
             responsive: true,
             scales: {
                 y: { beginAtZero: true }
             }
         }
-});
+    });
     </script>
     {% endif %}
 
@@ -224,18 +233,145 @@
             tension: 0.3,
             borderColor: "#e74c3c",
             pointRadius: 4
-        }]
-    },
+            }]
+        },
             options: {
             responsive: true,
             scales: {
                 y: { beginAtZero: false }
             }
         }
-});
+    });
     </script>
     {% endif %}
+    ```
+    <!-- ================= CHATBOT ================= -->
 
+    <div id="chatbox">
+        <div id="chat-header">💬 Support Chat</div>
+
+        <div id="chat-messages">
+            <div>
+                <b>Support:</b>
+                <div class="bot-msg">
+                    Hi. I'm here if you feel like talking. How are you feeling today?
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input id="chat-input" placeholder="Type something..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <style>
+        #chatbox {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 330px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            padding: 12px;
+            font-size: 14px;
+            z-index: 999;
+        }
+
+        #chat-header {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #444;
+        }
+
+        #chat-messages {
+            height: 240px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .bot-msg {
+            background: #f0f4ff;
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+
+        .user-msg {
+            background: #e8ffe8;
+            padding: 8px;
+            border-radius: 8px;
+            margin-top: 4px;
+            margin-bottom: 8px;
+        }
+
+        .chat-input-area {
+            display: flex;
+            gap: 5px;
+        }
+
+        #chat-input {
+            flex: 1;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .chat-input-area button {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: none;
+            background: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+
+    <script>
+
+        async function sendMessage() {
+
+            let input = document.getElementById("chat-input")
+            let message = input.value.trim()
+
+            if (!message) return
+
+            let messages = document.getElementById("chat-messages")
+
+            messages.innerHTML += `
+        <div>
+            <b>You:</b>
+            <div class="user-msg">${message}</div>
+        </div>
+    `
+
+            input.value = ""
+
+            messages.scrollTop = messages.scrollHeight
+
+            let res = await fetch("/chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ message: message })
+            })
+
+            let data = await res.json()
+
+            messages.innerHTML += `
+        <div>
+            <b>Support:</b>
+            <div class="bot-msg">${data.response}</div>
+        </div>
+    `
+
+            messages.scrollTop = messages.scrollHeight
+        }
+
+    </script>
 </body>
 
 </html>

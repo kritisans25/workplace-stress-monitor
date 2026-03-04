@@ -1,28 +1,26 @@
 import requests
-from datetime import datetime, timedelta
+import time
+
+NOISE_HEART_SOURCE = "raw:com.google.heart_rate.bpm:com.noisefit:noise_activity - Heart data"
 
 def fetch_recent_heart_rate(access_token):
-    end_time = int(datetime.utcnow().timestamp() * 1e9)
-    start_time = int((datetime.utcnow() - timedelta(hours=2)).timestamp() * 1e9)
 
-    body = {
-        "aggregateBy": [{
-            "dataTypeName": "com.google.heart_rate.bpm"
-        }],
-        "bucketByTime": {"durationMillis": 600000},
-        "startTimeNanos": start_time,
-        "endTimeNanos": end_time
-    }
+    end_time = int(time.time() * 1000000000)
+    start_time = int(end_time - (3 * 86400 * 1000000000))  # last 3 days
+
+    dataset_id = f"{start_time}-{end_time}"
+
+    url = f"https://www.googleapis.com/fitness/v1/users/me/dataSources/{NOISE_HEART_SOURCE}/datasets/{dataset_id}"
 
     headers = {
-        "Authorization": f"Bearer {access_token}",
-        "Content-Type": "application/json"
+        "Authorization": f"Bearer {access_token}"
     }
 
-    response = requests.post(
-        "https://www.googleapis.com/fitness/v1/users/me/dataset:aggregate",
-        json=body,
-        headers=headers
-    )
+    response = requests.get(url, headers=headers)
 
-    return response.json()
+    data = response.json()
+
+    print("GOOGLE FIT RAW HEART DATA:")
+    print(data)
+
+    return data

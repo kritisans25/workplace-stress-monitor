@@ -39,6 +39,15 @@ CREATE TABLE IF NOT EXISTS heart_rate_data (
 )
 """)
 
+cursor.execute("""
+SELECT bpm, timestamp
+FROM heart_rate_data
+WHERE user_id = ?
+ORDER BY timestamp
+""", (user_id,))
+
+rows = cursor.fetchall()
+
 conn.commit()
 conn.close()
 

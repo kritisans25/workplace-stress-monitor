@@ -26,6 +26,8 @@ from llm_explainer import generate_explanation
 from auth_utils import hash_password, verify_password
 from google_fit_reader import fetch_recent_heart_rate
 from spike_detector import detect_heart_rate_spike
+from email_alert import send_heart_rate_alert
+from chatbot import generate_chat_response
 
 # ================= APP =================
 app = Flask(__name__)
@@ -146,16 +148,16 @@ def predict():
         suggestions=suggestions
     )
 
-# ---------- DASHBOARD ----------
 @app.route("/dashboard")
 def dashboard():
+
     if "user_id" not in session:
         return redirect(url_for("login"))
 
     conn = get_db()
     cursor = conn.cursor()
 
-    # ---- Stress History ----
+    # ---------- Stress History ----------
     cursor.execute("""
         SELECT timestamp, stress_score, stress_level
         FROM stress_history
@@ -172,11 +174,12 @@ def dashboard():
     for ts, score, level in stress_rows:
         dt = datetime.fromisoformat(ts)
         formatted = dt.strftime("%d %b %Y, %I:%M %p")
+
         history.append((formatted, score, level))
         timestamps.append(formatted)
         scores.append(score)
 
-    # ---- Heart Rate ----
+    # ---------- Heart Rate ----------
     cursor.execute("""
         SELECT timestamp, heart_rate
         FROM heart_rate_data
@@ -189,21 +192,41 @@ def dashboard():
     hr_timestamps = []
     heart_rates = []
 
+    today = datetime.now().date()
+
     for ts, hr in hr_rows:
         dt = datetime.fromisoformat(ts)
-        formatted = dt.strftime("%d %b %Y, %I:%M %p")
-        hr_timestamps.append(formatted)
-        heart_rates.append(hr)
 
-    # ---- Spike Detection ----
-    if len(heart_rates) >= 6:
-        recent = heart_rates[-10:]
-        current_hr = heart_rates[-1]
+        # Keep only today's readings
+        if dt.date() == today:
+            formatted = dt.strftime("%I:%M %p")
+            hr_timestamps.append(formatted)
+            heart_rates.append(hr)
+
+    # Limit to last 20 readings
+    hr_timestamps = hr_timestamps[-20:]
+    heart_rates = heart_rates[-20:]
+
+    # Get user email
+    cursor.execute("SELECT email FROM users WHERE id=?", (session["user_id"],))
+    user_email = cursor.fetchone()[0]
+
+    # ---------- Spike Detection ----------
+    if heart_rates and len(heart_rates) >= 6:
+
+        recent = heart_rates[-6:]
+        current_hr = recent[-1]
+
         if detect_heart_rate_spike(recent[:-1], current_hr):
+
             session["alert"] = "⚠️ Sudden heart rate spike detected"
+            send_heart_rate_alert(user_email, current_hr)
 
     stress_trend = compute_stress_trend(DB_PATH, session["user_id"])
+
     conn.close()
+
+    alert = session.pop("alert", None)
 
     return render_template(
         "dashboard.html",
@@ -212,9 +235,9 @@ def dashboard():
         timestamps=timestamps,
         scores=scores,
         hr_timestamps=hr_timestamps,
-        heart_rates=heart_rates
+        heart_rates=heart_rates,
+        alert=alert
     )
-
 # ================= GOOGLE FIT =================
 
 @app.route("/google/connect")
@@ -240,9 +263,9 @@ def google_connect():
     return redirect(
         "https://accounts.google.com/o/oauth2/v2/auth?" + urlencode(params)
     )
-
 @app.route("/google/callback")
 def google_callback():
+
     code = request.args.get("code")
 
     token_response = requests.post(
@@ -257,31 +280,52 @@ def google_callback():
     ).json()
 
     access_token = token_response.get("access_token")
+
+    if not access_token:
+        return "Google authentication failed."
+
     session["google_access_token"] = access_token
 
+    # ---- Fetch Heart Rate Data ----
     data = fetch_recent_heart_rate(access_token)
 
     conn = get_db()
     cursor = conn.cursor()
 
-    for bucket in data.get("bucket", []):
-        for dataset in bucket.get("dataset", []):
-            for point in dataset.get("point", []):
-                if "value" in point:
-                    bpm = int(point["value"][0]["fpVal"])
-                    ts_nanos = int(point["endTimeNanos"])
-                    ts_seconds = ts_nanos / 1e9
-                    dt = datetime.fromtimestamp(ts_seconds)
+    points = data.get("point", [])
 
-                    cursor.execute("""
-                        INSERT INTO heart_rate_data (user_id, timestamp, heart_rate)
-                        VALUES (?, ?, ?)
-                    """, (session["user_id"], dt.isoformat(), bpm))
+    inserted_count = 0
+
+    for point in points:
+        bpm = int(point["value"][0]["fpVal"])
+
+        ts_nanos = int(point["endTimeNanos"])
+        ts_seconds = ts_nanos / 1e9
+        dt = datetime.fromtimestamp(ts_seconds)
+
+        cursor.execute("""
+            INSERT INTO heart_rate_data (user_id, timestamp, heart_rate)
+            VALUES (?, ?, ?)
+        """, (session["user_id"], dt.isoformat(), bpm))
+
+        inserted_count += 1
 
     conn.commit()
     conn.close()
 
+    print(f"Inserted {inserted_count} heart rate records")
+
     return redirect(url_for("dashboard"))
+# Chatbot
+@app.route("/chat", methods=["POST"])
+def chat():
+
+    data = request.json
+    user_message = data.get("message")
+
+    response = generate_chat_response(user_message)
+
+    return {"response": response}
 
 # ================= RUN =================
 if __name__ == "__main__":

@@ -26,8 +26,4 @@ def get_top_contributors(dimensions, threshold=5):
     }
 
     return important
-if __name__ == "__main__":
-    sample_answers = [3,3,4,1,0,1,2,3,3,1,2,2,0,1,1]
-    dims = compute_stress_dimensions(sample_answers)
-    print(dims)
-    print(get_top_contributors(dims))
+
