@@ -349,6 +349,12 @@
         </div>
         {% endif %}
 
+        {% if is_critical %}
+        <div class="alert-box" style="border-left-color: var(--danger); background: rgba(255, 107, 107, 0.1); color: #d63031;">
+            ⚠ You seem to be going through a tough time. Consider talking to someone you trust.
+        </div>
+        {% endif %}
+
         <div class="header-section">
             <h1>Your Dashboard</h1>
             <p>Monitor your stress levels and well-being metrics.</p>
@@ -358,27 +364,55 @@
             
             <!-- Key Metrics -->
             <div class="metrics-card">
+                <!-- Current Mental State -->
+                {% set ms_color = 'var(--text-main)' %}
+                {% if 'Critical' in mental_state %}
+                    {% set ms_color = 'var(--danger)' %}
+                {% elif 'High' in mental_state %}
+                    {% set ms_color = '#e67e22' %} <!-- orange/yellow -->
+                {% elif 'Mild' in mental_state %}
+                    {% set ms_color = '#f39c12' %} <!-- light orange -->
+                {% elif 'Stable' in mental_state %}
+                    {% set ms_color = 'var(--success)' %}
+                {% endif %}
+                <div class="metric" style="border-top: 4px solid {{ ms_color }};">
+                    <div class="metric-label">Mental State</div>
+                    <div class="metric-value" style="color: {{ ms_color }};">{{ mental_state }}</div>
+                </div>
+
                 <div class="metric">
                     <div class="metric-label">Current Stress Trend</div>
-                    <div class="metric-value" style="font-size: 24px; text-transform: capitalize;">{{ stress_trend }}</div>
-                    {% if stress_trend == 'Increasing' %}
-                        <div class="trend-up">↑ Needs attention</div>
-                    {% elif stress_trend == 'Decreasing' %}
-                        <div class="trend-down">↓ Improving</div>
+                    {% if not scores %}
+                        <p style="color: gray; font-size: 13px; margin: 8px 0 0 0;">
+                            No data. Take an assessment to see trends.
+                        </p>
                     {% else %}
-                        <div style="font-size: 14px; margin-top: 8px; color: var(--text-muted)">Stable</div>
+                        <div class="metric-value" style="font-size: 24px; text-transform: capitalize;">{{ stress_trend }}</div>
+                        {% if stress_trend == 'Increasing' %}
+                            <div class="trend-up">↑ Needs attention</div>
+                        {% elif stress_trend == 'Decreasing' %}
+                            <div class="trend-down">↓ Improving</div>
+                        {% else %}
+                            <div style="font-size: 14px; margin-top: 8px; color: var(--text-muted)">Stable</div>
+                        {% endif %}
                     {% endif %}
                 </div>
                 
                 <div class="metric">
                     <div class="metric-label">Latest Heart Rate</div>
-                    <div class="metric-value">
-                        {% if heart_rates and heart_rates|length > 0 %}
-                            {{ heart_rates[-1] }} <span style="font-size: 16px; color: var(--text-muted); font-weight: 500;">BPM</span>
-                        {% else %}
-                            --
-                        {% endif %}
-                    </div>
+                    {% if not heart_rates %}
+                        <p style="color: gray; font-size: 13px; margin: 8px 0 0 0;">
+                            No heart rate data available. Please connect Google Fit.
+                        </p>
+                    {% else %}
+                        <div class="metric-value">
+                            {{ latest_hr }}
+                            <span style="font-size: 16px; color: var(--text-muted); font-weight: 500;">BPM</span>
+                        </div>
+                        <p style="font-size:12px; color:gray; margin: 8px 0 0 0;">
+                            Last updated: {{ hr_timestamps[-1] if hr_timestamps else "No data" }}
+                        </p>
+                    {% endif %}
                 </div>
             </div>
 
@@ -397,7 +431,10 @@
             </div>
 
             <div class="card chart-card">
-                <h3 class="card-title">Heart Rate Trend (Google Fit)</h3>
+                <h3 class="card-title">
+                    Heart Rate Trend (Google Fit)
+                    <span style="font-size: 12px; font-weight: 500; color: var(--text-muted); background: #f1f5f9; padding: 4px 8px; border-radius: 4px;">Showing today's heart rate</span>
+                </h3>
                 {% if heart_rates and heart_rates|length > 1 %}
                     <div class="chart-container">
                         <canvas id="heartRateChart"></canvas>
@@ -406,6 +443,24 @@
                     <div style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); text-align: center;">
                         No sufficient heart rate data yet.<br>Connect Google Fit and sync data.
                     </div>
+                {% endif %}
+            </div>
+
+            <!-- Insights -->
+            <div class="card full-width-card">
+                <h3 class="card-title">Insights</h3>
+                {% if insights %}
+                <ul style="list-style-type: none; padding-left: 0; margin: 0; display: flex; flex-direction: column; gap: 12px;">
+                    {% for insight in insights %}
+                        <li style="background: rgba(74, 144, 226, 0.05); border-left: 4px solid var(--primary); padding: 14px 18px; border-radius: 6px; font-size: 14px; color: var(--text-main); font-weight: 500;">
+                            ✨ {{ insight }}
+                        </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div style="text-align: center; padding: 24px; color: var(--text-muted); background: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;">
+                    Not enough data yet
+                </div>
                 {% endif %}
             </div>
 
@@ -630,6 +685,16 @@
 
             messages.scrollTop = messages.scrollHeight;
         }
+
+        // Auto Chat Trigger for critical state
+        {% if is_critical %}
+        setTimeout(() => {
+            const body = document.getElementById("chat-body");
+            if (body.style.display !== "flex") {
+                toggleChat();
+            }
+        }, 1500);
+        {% endif %}
     </script>
 </body>
 </html>

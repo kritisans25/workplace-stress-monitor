@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import os, sys, sqlite3, joblib, requests
-from datetime import datetime
+from datetime import datetime, timedelta
 from urllib.parse import urlencode
 from dotenv import load_dotenv
 from flask import jsonify
@@ -47,6 +47,19 @@ model = joblib.load(os.path.join(PROJECT_ROOT, "ml", "model.pkl"))
 scaler = joblib.load(os.path.join(PROJECT_ROOT, "ml", "scaler.pkl"))
 
 # ================= ROUTES =================
+def get_mental_state(stress_score, mood, heart_rate):
+
+    if stress_score >= 45 and mood in ["sad", "angry", "lonely"] and heart_rate > 100:
+        return "Critical 🚨"
+
+    elif stress_score >= 40 or mood in ["stressed", "anxious"]:
+        return "High Stress ⚠️"
+
+    elif stress_score >= 25:
+        return "Mild Stress ⚡"
+
+    else:
+        return "Stable ✅"
 
 # ---------- HOME ----------
 @app.route("/")
@@ -195,20 +208,48 @@ def dashboard():
     hr_timestamps = []
     heart_rates = []
 
-    today = datetime.now().date()
+    import pytz
+    utc = pytz.utc
+    ist = pytz.timezone('Asia/Kolkata')
+
+    now = datetime.now(ist)
+    start_of_day = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    end_of_day = start_of_day + timedelta(days=1)
 
     for ts, hr in hr_rows:
-        dt = datetime.fromisoformat(ts)
-
-        # Keep only today's readings
-        if dt.date() == today:
+        dt_naive = datetime.fromisoformat(ts)
+        try:
+            dt_utc = utc.localize(dt_naive)
+        except ValueError:
+            dt_utc = dt_naive.astimezone(utc)
+        dt = dt_utc.astimezone(ist)
+        
+        if start_of_day <= dt < end_of_day:
             formatted = dt.strftime("%I:%M %p")
+            hr_timestamps.append(formatted)
+            heart_rates.append(hr)
+
+    if not heart_rates:
+        recent = hr_rows[-10:]
+
+        for ts, hr in recent:
+            dt_naive = datetime.fromisoformat(ts)
+            try:
+                dt_utc = utc.localize(dt_naive)
+            except ValueError:
+                dt_utc = dt_naive.astimezone(utc)
+            dt = dt_utc.astimezone(ist)
+            
+            formatted = dt.strftime("%d %b %I:%M %p")
             hr_timestamps.append(formatted)
             heart_rates.append(hr)
 
     # Limit to last 20 readings
     hr_timestamps = hr_timestamps[-20:]
     heart_rates = heart_rates[-20:]
+
+    # Compute latest heart rate
+    latest_hr = heart_rates[-1] if heart_rates else None
 
     # Get user email
     cursor.execute("SELECT email FROM users WHERE id=?", (session["user_id"],))
@@ -227,6 +268,35 @@ def dashboard():
 
     stress_trend = compute_stress_trend(DB_PATH, session["user_id"])
 
+    # ---------- Mental State & Insights ----------
+    latest_stress = scores[-1] if scores else 0
+    hr_for_calc = latest_hr if latest_hr is not None else 0
+    
+    cursor.execute("""
+        SELECT mood FROM mood_history
+        WHERE user_id = ?
+        ORDER BY timestamp DESC LIMIT 1
+    """, (session["user_id"],))
+    last_mood_row = cursor.fetchone()
+    current_mood = last_mood_row[0] if last_mood_row else "neutral"
+    
+    mental_state = get_mental_state(latest_stress, current_mood, hr_for_calc)
+    is_critical = "Critical" in mental_state
+    
+    insights = []
+    if latest_stress >= 40:
+        insights.append("Your recent stress levels are quite high. Taking short breaks might help.")
+    if stress_trend == "Increasing":
+        insights.append("Your stress levels are showing an upward trend lately.")
+    if current_mood in ["sad", "angry", "lonely"]:
+        insights.append("Your recent chats suggest a negative mood. Don't hesitate to seek support.")
+    if current_mood in ["stressed", "anxious"]:
+        insights.append("You've expressed feeling stressed/anxious recently. Try to practice breathing exercises.")
+    if len(heart_rates) >= 2 and sum(heart_rates[-3:])/len(heart_rates[-3:]) > 90:
+        insights.append("Your heart rate has been on the higher side today.")
+    if heart_rates and heart_rates[-1] > 110:
+        insights.append("Your heart rate is elevated. Try relaxation techniques.")
+
     conn.close()
 
     alert = session.pop("alert", None)
@@ -239,7 +309,11 @@ def dashboard():
         scores=scores,
         hr_timestamps=hr_timestamps,
         heart_rates=heart_rates,
-        alert=alert
+        latest_hr=latest_hr,
+        alert=alert,
+        mental_state=mental_state,
+        is_critical=is_critical,
+        insights=insights
     )
 # ================= GOOGLE FIT =================
 
