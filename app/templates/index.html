@@ -1,102 +1,237 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <title>Workplace Stress Assessment</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assessment | Workplace Stress Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4A90E2;
+            --primary-hover: #3A7BC8;
+            --bg-color: #F5F7FA;
+            --text-color: #2D3436;
+            --card-bg: #FFFFFF;
+            --border-radius: 12px;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
         }
 
-        .top-bar {
-            margin-bottom: 20px;
+        .top-navbar {
+            background: var(--card-bg);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .top-bar a {
-            margin-right: 15px;
+        .nav-brand {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .nav-links a {
+            margin-left: 20px;
             text-decoration: none;
-            font-weight: bold;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
         }
 
         .container {
-            max-width: 900px;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
-        .question {
+        .header-content {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .header-content h2 {
+            margin: 0 0 10px 0;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .header-content p {
+            color: #636e72;
+            margin: 0;
+            font-size: 15px;
+        }
+
+        .assessment-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+        }
+
+        .question-group {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .question-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .question-label {
+            display: block;
+            font-weight: 600;
+            font-size: 16px;
             margin-bottom: 15px;
+            line-height: 1.5;
+            color: #2D3436;
+        }
+
+        .question-number {
+            color: var(--primary);
+            margin-right: 5px;
+        }
+
+        .select-wrapper {
+            position: relative;
         }
 
         select {
+            appearance: none;
             width: 100%;
-            padding: 8px;
-            margin-top: 5px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            border: 1px solid #dfe6e9;
+            background-color: #fafbfc;
+            font-family: inherit;
+            font-size: 15px;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        button {
-            margin-top: 20px;
-            padding: 10px 25px;
-            font-weight: bold;
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+            background-color: #ffffff;
+        }
+
+        .select-wrapper::after {
+            content: "▼";
+            font-size: 12px;
+            color: #b2bec3;
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+
+        .submit-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
             cursor: pointer;
+            width: 100%;
+            margin-top: 30px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.3);
+        }
+
+        .submit-btn:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.4);
+        }
+        
+        @media (max-width: 600px) {
+            .assessment-card { padding: 25px; }
+            .top-navbar { padding: 16px 20px; }
         }
     </style>
 </head>
-
 <body>
 
-    <div class="top-bar">
-        <a href="{{ url_for('dashboard') }}">Dashboard</a>
-        <a href="{{ url_for('logout') }}">Logout</a>
-    </div>
+    <nav class="top-navbar">
+        <div class="nav-brand">Workplace Mind</div>
+        <div class="nav-links">
+            <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('logout') }}">Logout</a>
+        </div>
+    </nav>
 
     <div class="container">
-        <h2>Workplace Stress Assessment</h2>
+        <div class="header-content">
+            <h2>Workplace Stress Assessment</h2>
+            <p>Please answer the following questions honestly to evaluate your current stress levels.</p>
+        </div>
 
-        <form action="{{ url_for('predict') }}" method="POST">
+        <div class="assessment-card">
+            <form action="{{ url_for('predict') }}" method="POST">
+                
+                {% for i in range(1, 16) %}
+                <div class="question-group">
+                    <label class="question-label">
+                        <span class="question-number">Q{{ i }}.</span>
+                        {% if i == 1 %} How often do you feel overwhelmed by your workload?
+                        {% elif i == 2 %} How often do tight deadlines cause you stress?
+                        {% elif i == 3 %} How often do you feel pressured to work faster than comfortable?
+                        {% elif i == 4 %} How often do you feel physically exhausted after work?
+                        {% elif i == 5 %} How often do you experience poor sleep due to work?
+                        {% elif i == 6 %} How often do you feel body discomfort during workdays?
+                        {% elif i == 7 %} How often do you find it hard to concentrate?
+                        {% elif i == 8 %} How often do you feel mentally drained?
+                        {% elif i == 9 %} How often do you struggle to make decisions?
+                        {% elif i == 10 %} How often do you feel anxious because of work?
+                        {% elif i == 11 %} How often do you feel irritable or frustrated?
+                        {% elif i == 12 %} How often do you feel emotionally drained?
+                        {% elif i == 13 %} How often does work interfere with your personal life?
+                        {% elif i == 14 %} How often do you feel unable to relax after work?
+                        {% elif i == 15 %} How often do you feel you lack time for yourself?
+                        {% endif %}
+                    </label>
 
-            {% for i in range(1, 16) %}
-            <div class="question">
-                <label>
-                    Q{{ i }}.
-                    {% if i == 1 %} How often do you feel overwhelmed by your workload?
-                    {% elif i == 2 %} How often do tight deadlines cause you stress?
-                    {% elif i == 3 %} How often do you feel pressured to work faster than comfortable?
-                    {% elif i == 4 %} How often do you feel physically exhausted after work?
-                    {% elif i == 5 %} How often do you experience poor sleep due to work?
-                    {% elif i == 6 %} How often do you feel body discomfort during workdays?
-                    {% elif i == 7 %} How often do you find it hard to concentrate?
-                    {% elif i == 8 %} How often do you feel mentally drained?
-                    {% elif i == 9 %} How often do you struggle to make decisions?
-                    {% elif i == 10 %} How often do you feel anxious because of work?
-                    {% elif i == 11 %} How often do you feel irritable or frustrated?
-                    {% elif i == 12 %} How often do you feel emotionally drained?
-                    {% elif i == 13 %} How often does work interfere with your personal life?
-                    {% elif i == 14 %} How often do you feel unable to relax after work?
-                    {% elif i == 15 %} How often do you feel you lack time for yourself?
-                    {% endif %}
-                </label>
+                    <div class="select-wrapper">
+                        <select name="Q{{ i }}" required>
+                            <option value="" disabled selected>Select an option...</option>
+                            <option value="0">Never</option>
+                            <option value="1">Rarely</option>
+                            <option value="2">Sometimes</option>
+                            <option value="3">Often</option>
+                            <option value="4">Always</option>
+                        </select>
+                    </div>
+                </div>
+                {% endfor %}
 
-                <select name="Q{{ i }}" required>
-                    <option value="0">Never</option>
-                    <option value="1">Rarely</option>
-                    <option value="2">Sometimes</option>
-                    <option value="3">Often</option>
-                    <option value="4">Always</option>
-                </select>
-            </div>
-            {% endfor %}
-
-            <button type="submit">Submit Assessment</button>
-        </form>
+                <button type="submit" class="submit-btn">Evaluate My Stress Level</button>
+            </form>
+        </div>
     </div>
 
 </body>
-
 </html>

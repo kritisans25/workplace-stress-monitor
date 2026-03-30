@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS stress_history (
 )
 """)
 
-# ================= GOOGLE FIT HEART RATE =================
+# ================= HEART RATE =================
 cursor.execute("""
 CREATE TABLE IF NOT EXISTS heart_rate_data (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,14 +39,16 @@ CREATE TABLE IF NOT EXISTS heart_rate_data (
 )
 """)
 
+# ================= MOOD HISTORY =================
 cursor.execute("""
-SELECT bpm, timestamp
-FROM heart_rate_data
-WHERE user_id = ?
-ORDER BY timestamp
-""", (user_id,))
-
-rows = cursor.fetchall()
+CREATE TABLE IF NOT EXISTS mood_history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    mood TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+)
+""")
 
 conn.commit()
 conn.close()

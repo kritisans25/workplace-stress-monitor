@@ -1,73 +1,268 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <title>Stress Assessment Result</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Result | Workplace Stress Monitor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4A90E2;
+            --success: #7ED957;
+            --warning: #f39c12;
+            --danger: #FF6B6B;
+            --bg-color: #F5F7FA;
+            --text-main: #2D3436;
+            --text-muted: #636e72;
+            --card-bg: #FFFFFF;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+            --border-radius: 16px;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
         }
 
         .container {
             max-width: 900px;
-            margin: auto;
-            background: white;
-            padding: 25px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 40px;
+            text-align: center;
+            border-top: 6px solid var(--primary); /* default color, overridden by JS or inline style if needed */
+        }
+
+        /* Dynamic Status Colors based on {{ stress_level }} roughly */
+        .status-Low { border-top-color: var(--success); }
+        .status-Low .score-circle { color: var(--success); border-color: rgba(126, 217, 87, 0.2); background: rgba(126, 217, 87, 0.05); }
+        
+        .status-Moderate { border-top-color: var(--warning); }
+        .status-Moderate .score-circle { color: var(--warning); border-color: rgba(243, 156, 18, 0.2); background: rgba(243, 156, 18, 0.05); }
+        
+        .status-High { border-top-color: var(--danger); }
+        .status-High .score-circle { color: var(--danger); border-color: rgba(255, 107, 107, 0.2); background: rgba(255, 107, 107, 0.05); }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text-muted);
+        }
+
+        .score-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px auto;
+            border: 4px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .score-value {
+            font-size: 42px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .score-label {
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 5px;
+            color: var(--text-muted);
+        }
+
+        .stress-level-text {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .stress-trend-text {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 40px;
+            background: #f8fafc;
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            text-align: left;
+            margin-bottom: 40px;
+        }
+        
+        @media (min-width: 768px) {
+            .details-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        .info-card {
+            background: #fdfdfd;
+            border: 1px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .info-card h3 {
+            margin-top: 0;
+            font-size: 18px;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dimension-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed #e2e8f0;
+            font-size: 14px;
+        }
+        .dimension-item:last-child { border-bottom: none; }
+        .dimension-name { color: var(--text-muted); }
+        .dimension-value { font-weight: 600; }
+
+        .explanation-text {
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        .suggestions-list {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-muted);
+        }
+        .suggestions-list li { margin-bottom: 8px; }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            margin-top: 20px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 24px;
             border-radius: 8px;
-        }
-
-        ul {
-            line-height: 1.8;
-        }
-
-        .nav-links a {
-            margin-right: 15px;
-            font-weight: bold;
+            font-weight: 600;
             text-decoration: none;
+            font-size: 15px;
+            transition: all 0.2s;
         }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+        }
+        .btn-primary:hover { background: #3A7BC8; transform: translateY(-1px); }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-main);
+            border: 1px solid #ddd;
+        }
+        .btn-secondary:hover { background: #f8fafc; }
+
     </style>
 </head>
-
 <body>
 
     <div class="container">
+        <!-- Add dynamic class based on stress level for styling -->
+        <div class="result-card" id="resultCard">
+            
+            <div class="header-title">Assessment Results</div>
+            
+            <div class="score-circle">
+                <div class="score-value">{{ stress_score }}</div>
+                <div class="score-label">Score</div>
+            </div>
 
-        <h2>Your Stress Assessment Result</h2>
+            <div class="stress-level-text" id="levelText">{{ stress_level }}</div>
+            
+            {% if stress_trend %}
+            <div class="stress-trend-text">Trend: <strong>{{ stress_trend }}</strong></div>
+            {% endif %}
 
-        <p><strong>Stress Level:</strong> {{ stress_level }}</p>
-        <p><strong>Stress Score:</strong> {{ stress_score }}</p>
-        <p><strong>Stress Trend:</strong> {{ stress_trend }}</p>
+            <div class="details-grid">
+                <!-- Breakdown -->
+                <div class="info-card">
+                    <h3>📊 Dimensions Breakdown</h3>
+                    <div>
+                        {% for key, value in dimensions.items() %}
+                        <div class="dimension-item">
+                            <span class="dimension-name">{{ key }}</span>
+                            <span class="dimension-value">{{ value }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
 
-        <h3>Dimension Breakdown</h3>
-        <ul>
-            {% for key, value in dimensions.items() %}
-            <li>{{ key }}: {{ value }}</li>
-            {% endfor %}
-        </ul>
+                <!-- AI Explanation -->
+                <div class="info-card" style="grid-column: span 1; @media(min-width:768px){ grid-column: span 2; }">
+                    <h3>🧠 AI Analysis</h3>
+                    <div class="explanation-text">{{ explanation }}</div>
+                </div>
 
-        <h3>Explanation</h3>
-        <p>{{ explanation }}</p>
+                <!-- Suggestions -->
+                <div class="info-card" style="grid-column: 1 / -1;">
+                    <h3>💡 Actionable Suggestions</h3>
+                    <ul class="suggestions-list">
+                        {% for s in suggestions %}
+                        <li>{{ s }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
 
-        <h3>Suggestions</h3>
-        <ul>
-            {% for s in suggestions %}
-            <li>{{ s }}</li>
-            {% endfor %}
-        </ul>
+            <div class="action-buttons">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+                <a href="{{ url_for('assessment') }}" class="btn btn-secondary">Retake</a>
+            </div>
 
-        <hr>
-
-        <div class="nav-links">
-            <a href="{{ url_for('dashboard') }}">Go to Dashboard</a>
-            <a href="{{ url_for('assessment') }}">Retake Assessment</a>
-            <a href="{{ url_for('logout') }}">Logout</a>
         </div>
-
     </div>
 
+    <script>
+        // Simple script to adjust colors based on the text
+        const levelText = document.getElementById('levelText').innerText.toLowerCase();
+        const card = document.getElementById('resultCard');
+        
+        if (levelText.includes('high') || levelText.includes('severe')) {
+            card.classList.add('status-High');
+            document.getElementById('levelText').style.color = 'var(--danger)';
+        } else if (levelText.includes('moderate') || levelText.includes('medium')) {
+            card.classList.add('status-Moderate');
+            document.getElementById('levelText').style.color = 'var(--warning)';
+        } else {
+            card.classList.add('status-Low');
+            document.getElementById('levelText').style.color = 'var(--success)';
+        }
+    </script>
 </body>
-
 </html>

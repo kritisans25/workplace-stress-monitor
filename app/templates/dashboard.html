@@ -1,377 +1,635 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-    <title>User Dashboard</title>
-
-    ```
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Workplace Stress Monitor</title>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #4A90E2;
+            --success: #7ED957;
+            --danger: #FF6B6B;
+            --warning: #f1c40f;
+            --bg-color: #F5F7FA;
+            --text-main: #2D3436;
+            --text-muted: #636e72;
+            --card-bg: #FFFFFF;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.04);
+            --border-radius: 16px;
+        }
+
         body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            background: #f2f2f2;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
         }
 
-        .container {
-            max-width: 1100px;
-            margin: auto;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-        }
-
-        h2 {
-            margin-top: 10px;
-        }
-
-        h3 {
-            margin-top: 30px;
-        }
-
-        .top-actions {
+        /* Navbar */
+        .top-navbar {
+            background: var(--card-bg);
+            padding: 16px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .nav a {
-            margin-right: 15px;
-            font-weight: bold;
+        .nav-brand {
+            font-weight: 700;
+            font-size: 20px;
+            color: var(--primary);
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .nav-links a {
             text-decoration: none;
-            color: #333;
+            color: var(--text-main);
+            font-weight: 500;
+            font-size: 14px;
+            transition: color 0.2s;
         }
 
-        .google-btn {
-            background: #4285F4;
+        .nav-links a:hover { color: var(--primary); }
+
+        .btn-primary {
+            background: var(--primary);
             color: white;
-            padding: 10px 16px;
+            padding: 10px 18px;
+            border-radius: 8px;
             text-decoration: none;
-            border-radius: 6px;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-primary:hover { background: #3A7BC8; }
+        
+        .btn-google {
+            background: #ffffff;
+            color: #444;
+            border: 1px solid #ddd;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .btn-google:hover { background: #f9f9f9; }
+
+        .badge-connected {
+            background: rgba(126, 217, 87, 0.1);
+            color: #55b236;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
-        .connected {
-            margin-left: 10px;
-            color: green;
-            font-weight: bold;
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
         }
 
-        .alert {
-            background: #ffe0e0;
-            border-left: 6px solid #d9534f;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-weight: bold;
+        .header-section {
+            margin-bottom: 30px;
+        }
+        
+        .header-section h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .header-section p {
+            color: var(--text-muted);
+            margin: 8px 0 0 0;
         }
 
-        .chart-box {
-            margin-top: 20px;
+        .alert-box {
+            background: rgba(255, 107, 107, 0.1);
+            border-left: 4px solid var(--danger);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #d63031;
+            font-weight: 500;
         }
 
-        table {
+        /* Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 20px 0;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metrics-card { grid-column: span 12; display: flex; gap: 24px; background: transparent; padding: 0; box-shadow: none; border: none; }
+        .metric { flex: 1; background: var(--card-bg); border-radius: var(--border-radius); padding: 24px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.03); }
+        .metric-label { font-size: 14px; color: var(--text-muted); font-weight: 500; margin-bottom: 8px; }
+        .metric-value { font-size: 32px; font-weight: 700; color: var(--text-main); }
+        .trend-up { color: var(--danger); font-size: 14px; font-weight: 600; margin-top: 8px; display: inline-block;}
+        .trend-down { color: var(--success); font-size: 14px; font-weight: 600; margin-top: 8px; display: inline-block;}
+
+        .chart-card { grid-column: span 6; }
+        @media (max-width: 900px) { .chart-card { grid-column: span 12; } .metrics-card { flex-direction: column; } }
+
+        .full-width-card { grid-column: span 12; }
+
+        .chart-container { position: relative; height: 300px; width: 100%; }
+
+        /* Table Styles */
+        .styled-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 15px;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: center;
-        }
-
-        th {
-            background-color: #f5f5f5;
-        }
-
-        .trend {
-            font-size: 18px;
-            font-weight: bold;
+            font-size: 14px;
             margin-top: 10px;
         }
-
-        .trend span {
-            color: #d9534f;
+        .styled-table thead tr {
+            background-color: #f8fafc;
+            color: var(--text-muted);
+            text-align: left;
         }
-    </style>
-    ```
-
-</head>
-
-<body>
-
-    ```
-    <div class="container">
-
-        <!-- TOP BAR -->
-        <div class="top-actions">
-            <div>
-                <a href="{{ url_for('google_connect') }}" class="google-btn">
-                    🔗 Connect Google Fit
-                </a>
-
-                {% if session.get("google_access_token") %}
-                <span class="connected">✅ Google Fit Connected</span>
-                {% endif %}
-            </div>
-
-            <div class="nav">
-                <a href="{{ url_for('assessment') }}">Take New Assessment</a>
-                <a href="{{ url_for('logout') }}">Logout</a>
-            </div>
-        </div>
-
-        <!-- ALERT -->
-        {% if alert %}
-        <div class="alert">
-            {{ alert }}
-        </div>
-        {% endif %}
-
-        <!-- TITLE -->
-        <h2>Your Stress Dashboard</h2>
-
-        <p class="trend">
-            Current Stress Trend:
-            <span>{{ stress_trend }}</span>
-        </p>
-
-        <!-- STRESS GRAPH -->
-        <h3>Stress Trend Over Time</h3>
-
-        {% if scores|length > 1 %}
-        <div class="chart-box">
-            <canvas id="stressChart"></canvas>
-        </div>
-        {% else %}
-        <p>Not enough data to display stress trend graph.</p>
-        {% endif %}
-
-        <!-- HEART RATE GRAPH -->
-        <h3>Heart Rate Trend (Google Fit)</h3>
-
-        {% if heart_rates and heart_rates|length > 1 %}
-        <div class="chart-box">
-            <canvas id="heartRateChart"></canvas>
-        </div>
-
-        <p><b>Latest Heart Rate:</b> {{ heart_rates[-1] }} BPM</p>
-
-        {% else %}
-        <p>No sufficient heart rate data yet.</p>
-        {% endif %}
-
-        <!-- STRESS HISTORY -->
-        <h3>Stress History</h3>
-
-        {% if history %}
-        <table>
-            <tr>
-                <th>Date & Time</th>
-                <th>Stress Score</th>
-                <th>Stress Level</th>
-            </tr>
-
-            {% for row in history %}
-            <tr>
-                <td>{{ row[0] }}</td>
-                <td>{{ row[1] }}</td>
-                <td>{{ row[2] }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-        {% else %}
-        <p>No stress records yet.</p>
-        {% endif %}
-
-    </div>
-
-    <!-- STRESS GRAPH SCRIPT -->
-    {% if scores|length > 1 %}
-    <script>
-        new Chart(document.getElementById("stressChart"), {
-            type: "line",
-            data: {
-                labels: {{ timestamps | tojson }},
-            datasets: [{
-                label: "Stress Score",
-                data: {{ scores | tojson }},
-            borderWidth: 2,
-            tension: 0.3,
-            pointRadius: 4,
-            borderColor: "#3498db"
-            }]
-        },
-            options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            }
+        .styled-table th, .styled-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f2f6;
         }
-    });
-    </script>
-    {% endif %}
-
-    <!-- HEART RATE GRAPH SCRIPT -->
-    {% if heart_rates and heart_rates|length > 1 %}
-    <script>
-        new Chart(document.getElementById("heartRateChart"), {
-            type: "line",
-            data: {
-                labels: {{ hr_timestamps | tojson }},
-            datasets: [{
-                label: "Heart Rate (BPM)",
-                data: {{ heart_rates | tojson }},
-            borderWidth: 2,
-            tension: 0.3,
-            borderColor: "#e74c3c",
-            pointRadius: 4
-            }]
-        },
-            options: {
-            responsive: true,
-            scales: {
-                y: { beginAtZero: false }
-            }
+        .styled-table tbody tr:hover { background-color: #fbfcfd; }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
         }
-    });
-    </script>
-    {% endif %}
-    ```
-    <!-- ================= CHATBOT ================= -->
+        .status-high { background: rgba(255, 107, 107, 0.1); color: var(--danger); }
+        .status-medium { background: rgba(241, 196, 15, 0.15); color: #d4ac0d; }
+        .status-low { background: rgba(126, 217, 87, 0.1); color: var(--success); }
 
-    <div id="chatbox">
-        <div id="chat-header">💬 Support Chat</div>
-
-        <div id="chat-messages">
-            <div>
-                <b>Support:</b>
-                <div class="bot-msg">
-                    Hi. I'm here if you feel like talking. How are you feeling today?
-                </div>
-            </div>
-        </div>
-
-        <div class="chat-input-area">
-            <input id="chat-input" placeholder="Type something..." />
-            <button onclick="sendMessage()">Send</button>
-        </div>
-    </div>
-
-    <style>
+        /* Chatbot Styles */
         #chatbox {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 330px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-            padding: 12px;
+            bottom: 24px;
+            right: 24px;
+            width: 350px;
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
             font-size: 14px;
-            z-index: 999;
+            z-index: 1000;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
         }
 
         #chat-header {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #444;
+            padding: 16px 20px;
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
+        
+        #chat-header:hover { background: #3A7BC8; }
+
+        #chat-body {
+            display: none; /* minimized by default */
+            flex-direction: column;
+            height: 400px;
+            border: 1px solid #eee;
+            border-top: none;
+            border-radius: 0 0 16px 16px;
+        }
+
+        #mood-indicator {
+            padding: 8px 16px;
+            background: #f8fafc;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-bottom: 1px solid #eee;
+            text-align: center;
+        }
+
+        #detected-mood { font-weight: 600; color: var(--primary); }
 
         #chat-messages {
-            height: 240px;
+            flex: 1;
+            padding: 16px;
             overflow-y: auto;
-            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 85%; }
+        .msg-wrapper.bot { align-self: flex-start; }
+        .msg-wrapper.user { align-self: flex-end; align-items: flex-end; }
+
+        .msg-bubble {
+            padding: 10px 14px;
+            border-radius: 12px;
+            line-height: 1.4;
+        }
+        
         .bot-msg {
             background: #f0f4ff;
-            padding: 8px;
-            border-radius: 8px;
-            margin-top: 4px;
-            margin-bottom: 8px;
+            color: #1e3a8a;
+            border-bottom-left-radius: 4px;
         }
 
         .user-msg {
-            background: #e8ffe8;
-            padding: 8px;
-            border-radius: 8px;
-            margin-top: 4px;
-            margin-bottom: 8px;
+            background: var(--primary);
+            color: white;
+            border-bottom-right-radius: 4px;
         }
 
+        .msg-author { font-size: 11px; margin-bottom: 4px; color: var(--text-muted); }
+
         .chat-input-area {
+            padding: 12px 16px;
+            background: #fff;
+            border-top: 1px solid #eee;
             display: flex;
-            gap: 5px;
+            gap: 8px;
         }
 
         #chat-input {
             flex: 1;
-            padding: 6px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
+            padding: 10px 14px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
         }
+        #chat-input:focus { border-color: var(--primary); }
 
-        .chat-input-area button {
-            padding: 6px 10px;
-            border-radius: 6px;
-            border: none;
-            background: #3498db;
+        .chat-send-btn {
+            background: var(--primary);
             color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
         }
+        .chat-send-btn:hover { background: #3A7BC8; }
+
     </style>
+</head>
+<body>
+
+    <nav class="top-navbar">
+        <div class="nav-brand">Workplace Mind</div>
+        <div class="nav-actions">
+            {% if session.get("google_access_token") %}
+                <span class="badge-connected">✓ Google Fit Connected</span>
+            {% else %}
+                <a href="{{ url_for('google_connect') }}" class="btn-google">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                    Connect Fit
+                </a>
+            {% endif %}
+            <div class="nav-links">
+                <a href="{{ url_for('assessment') }}" class="btn-primary" style="color: white;">New Assessment</a>
+                <a href="{{ url_for('logout') }}" style="margin-left: 10px;">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        
+        {% if alert %}
+        <div class="alert-box">
+            ⚠ {{ alert }}
+        </div>
+        {% endif %}
+
+        <div class="header-section">
+            <h1>Your Dashboard</h1>
+            <p>Monitor your stress levels and well-being metrics.</p>
+        </div>
+
+        <div class="dashboard-grid">
+            
+            <!-- Key Metrics -->
+            <div class="metrics-card">
+                <div class="metric">
+                    <div class="metric-label">Current Stress Trend</div>
+                    <div class="metric-value" style="font-size: 24px; text-transform: capitalize;">{{ stress_trend }}</div>
+                    {% if stress_trend == 'Increasing' %}
+                        <div class="trend-up">↑ Needs attention</div>
+                    {% elif stress_trend == 'Decreasing' %}
+                        <div class="trend-down">↓ Improving</div>
+                    {% else %}
+                        <div style="font-size: 14px; margin-top: 8px; color: var(--text-muted)">Stable</div>
+                    {% endif %}
+                </div>
+                
+                <div class="metric">
+                    <div class="metric-label">Latest Heart Rate</div>
+                    <div class="metric-value">
+                        {% if heart_rates and heart_rates|length > 0 %}
+                            {{ heart_rates[-1] }} <span style="font-size: 16px; color: var(--text-muted); font-weight: 500;">BPM</span>
+                        {% else %}
+                            --
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="card chart-card">
+                <h3 class="card-title">Stress Trend Over Time</h3>
+                {% if scores|length > 1 %}
+                    <div class="chart-container">
+                        <canvas id="stressChart"></canvas>
+                    </div>
+                {% else %}
+                    <div style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                        Not enough data. Take more assessments.
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="card chart-card">
+                <h3 class="card-title">Heart Rate Trend (Google Fit)</h3>
+                {% if heart_rates and heart_rates|length > 1 %}
+                    <div class="chart-container">
+                        <canvas id="heartRateChart"></canvas>
+                    </div>
+                {% else %}
+                    <div style="height: 200px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); text-align: center;">
+                        No sufficient heart rate data yet.<br>Connect Google Fit and sync data.
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- History Table -->
+            <div class="card full-width-card">
+                <h3 class="card-title">Recent Assessments</h3>
+                {% if history %}
+                <div style="overflow-x: auto;">
+                    <table class="styled-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Stress Score</th>
+                                <th>Stress Level</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in history %}
+                            <tr>
+                                <td>{{ row[0] }}</td>
+                                <td><strong>{{ row[1] }}</strong> / 60</td>
+                                <td>
+                                    {% if 'High' in row[2] %}
+                                        <span class="status-badge status-high">{{ row[2] }}</span>
+                                    {% elif 'Moderate' in row[2] %}
+                                        <span class="status-badge status-medium">{{ row[2] }}</span>
+                                    {% else %}
+                                        <span class="status-badge status-low">{{ row[2] }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p style="color: var(--text-muted);">No stress records yet.</p>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Chart Scripts -->
+    {% if scores|length > 1 %}
+    <script>
+        const stressCtx = document.getElementById("stressChart").getContext("2d");
+        
+        let gradient = stressCtx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(74, 144, 226, 0.2)');
+        gradient.addColorStop(1, 'rgba(74, 144, 226, 0)');
+
+        new Chart(stressCtx, {
+            type: "line",
+            data: {
+                labels: {{ timestamps | tojson }},
+                datasets: [{
+                    label: "Stress Score",
+                    data: {{ scores | tojson }},
+                    borderWidth: 2,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: "#ffffff",
+                    pointBorderColor: "#4A90E2",
+                    pointBorderWidth: 2,
+                    borderColor: "#4A90E2",
+                    backgroundColor: gradient,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: "#f0f0f0" }, border: { dash: [4, 4] } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+    {% endif %}
+
+    {% if heart_rates and heart_rates|length > 1 %}
+    <script>
+        const hrCtx = document.getElementById("heartRateChart").getContext("2d");
+        
+        let hrGradient = hrCtx.createLinearGradient(0, 0, 0, 300);
+        hrGradient.addColorStop(0, 'rgba(255, 107, 107, 0.2)');
+        hrGradient.addColorStop(1, 'rgba(255, 107, 107, 0)');
+
+        new Chart(hrCtx, {
+            type: "line",
+            data: {
+                labels: {{ hr_timestamps | tojson }},
+                datasets: [{
+                    label: "Heart Rate (BPM)",
+                    data: {{ heart_rates | tojson }},
+                    borderWidth: 2,
+                    tension: 0.4,
+                    borderColor: "#FF6B6B",
+                    backgroundColor: hrGradient,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: "#ffffff",
+                    pointBorderColor: "#FF6B6B",
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { beginAtZero: false, grid: { color: "#f0f0f0" } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+    {% endif %}
+
+    <!-- Chatbot Widget -->
+    <div id="chatbox">
+        <div id="chat-header" onclick="toggleChat()">
+            <span>💬 Mind Assistant</span>
+            <span id="chat-toggle-icon">▲</span>
+        </div>
+        <div id="chat-body">
+            <div id="mood-indicator">
+                Current Tone: <span id="detected-mood">Observing...</span>
+            </div>
+            <div id="chat-messages">
+                <div class="msg-wrapper bot">
+                    <span class="msg-author">Assistant</span>
+                    <div class="msg-bubble bot-msg">
+                        Hi there. I'm here if you need someone to talk to or want me to explain your stress data. How are you feeling today?
+                    </div>
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="handleKeyPress(event)" />
+                <button class="chat-send-btn" onclick="sendMessage()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
-
-        async function sendMessage() {
-
-            let input = document.getElementById("chat-input")
-            let message = input.value.trim()
-
-            if (!message) return
-
-            let messages = document.getElementById("chat-messages")
-
-            messages.innerHTML += `
-        <div>
-            <b>You:</b>
-            <div class="user-msg">${message}</div>
-        </div>
-    `
-
-            input.value = ""
-
-            messages.scrollTop = messages.scrollHeight
-
-            let res = await fetch("/chat", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ message: message })
-            })
-
-            let data = await res.json()
-
-            messages.innerHTML += `
-        <div>
-            <b>Support:</b>
-            <div class="bot-msg">${data.response}</div>
-        </div>
-    `
-
-            messages.scrollTop = messages.scrollHeight
+        function toggleChat() {
+            const body = document.getElementById("chat-body");
+            const icon = document.getElementById("chat-toggle-icon");
+            if (body.style.display === "flex") {
+                body.style.display = "none";
+                icon.innerText = "▲";
+            } else {
+                body.style.display = "flex";
+                icon.innerText = "▼";
+                document.getElementById('chat-input').focus();
+            }
         }
 
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        async function sendMessage() {
+            let input = document.getElementById("chat-input");
+            let message = input.value.trim();
+            if (!message) return;
+
+            let messages = document.getElementById("chat-messages");
+
+            // Add user message
+            messages.innerHTML += `
+                <div class="msg-wrapper user">
+                    <div class="msg-bubble user-msg">${message}</div>
+                </div>
+            `;
+            
+            input.value = "";
+            messages.scrollTop = messages.scrollHeight;
+
+            // Loading state
+            let loadingId = "loading-" + Date.now();
+            messages.innerHTML += `
+                <div class="msg-wrapper bot" id="${loadingId}">
+                    <span class="msg-author">Assistant</span>
+                    <div class="msg-bubble bot-msg">...</div>
+                </div>
+            `;
+            messages.scrollTop = messages.scrollHeight;
+
+            try {
+                let res = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: message })
+                });
+                
+                let data = await res.json();
+                document.getElementById(loadingId).remove();
+                
+                document.getElementById("detected-mood").innerText = data.mood || "Neutral";
+
+                messages.innerHTML += `
+                    <div class="msg-wrapper bot">
+                        <span class="msg-author">Assistant</span>
+                        <div class="msg-bubble bot-msg">${data.response}</div>
+                    </div>
+                `;
+            } catch (err) {
+                document.getElementById(loadingId).remove();
+                messages.innerHTML += `
+                    <div class="msg-wrapper bot">
+                        <div class="msg-bubble bot-msg" style="color:var(--danger)">Sorry, there was an error processing your message.</div>
+                    </div>
+                `;
+            }
+
+            messages.scrollTop = messages.scrollHeight;
+        }
     </script>
 </body>
-
 </html>

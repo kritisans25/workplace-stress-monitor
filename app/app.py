@@ -3,6 +3,8 @@ import os, sys, sqlite3, joblib, requests
 from datetime import datetime
 from urllib.parse import urlencode
 from dotenv import load_dotenv
+from flask import jsonify
+
 
 # ================= ENV =================
 load_dotenv()
@@ -28,6 +30,7 @@ from google_fit_reader import fetch_recent_heart_rate
 from spike_detector import detect_heart_rate_spike
 from email_alert import send_heart_rate_alert
 from chatbot import generate_chat_response
+from mood_detector import detect_mood
 
 # ================= APP =================
 app = Flask(__name__)
@@ -323,10 +326,134 @@ def chat():
     data = request.json
     user_message = data.get("message")
 
-    response = generate_chat_response(user_message)
+    mood = detect_mood(user_message)
+    positive_keywords = ["energetic", "excited", "motivated", "great", "good", "happy", "awesome"]
+    if any(word in user_message.lower() for word in positive_keywords):
+        mood = "happy"
 
-    return {"response": response}
+    # ✅ NEW: Get user_id from session
+    user_id = session.get("user_id")
 
+    # ✅ NEW: Save mood (only if user is logged in)
+    if user_id:
+        conn = sqlite3.connect(DB_PATH)
+        cur = conn.cursor()
+
+        # Optional: avoid duplicate consecutive moods
+        cur.execute("""
+            SELECT mood FROM mood_history
+            WHERE user_id = ?
+            ORDER BY timestamp DESC LIMIT 1
+        """, (user_id,))
+
+        last = cur.fetchone()
+
+        if not last or last[0] != mood:
+            cur.execute("""
+                INSERT INTO mood_history (user_id, mood)
+                VALUES (?, ?)
+            """, (user_id, mood))
+
+        conn.commit()
+        conn.close()
+
+    # ================= CHAT HISTORY =================
+
+    if "chat_history" not in session:
+        session["chat_history"] = []
+
+    chat_history = session["chat_history"]
+
+    chat_history.append({
+        "role": "user",
+        "content": f"(User mood: {mood}) {user_message}"
+    })
+
+    chat_history = chat_history[-10:]
+
+    response = generate_chat_response(chat_history)
+
+    chat_history.append({
+        "role": "assistant",
+        "content": response
+    })
+
+    session["chat_history"] = chat_history
+
+    mood_score = {
+        "happy": 5,
+        "neutral": 3,
+        "stressed": 2,
+        "anxious": 2,
+        "sad": 1,
+        "angry": 1,
+        "lonely": 1
+    }.get(mood, 3)
+    return {
+        "response": response,
+        "mood": mood,
+        "mood_score": mood_score
+    }
+#MOOD DATA
+@app.route("/mood_data")
+def mood_data():
+    user_id = session['user_id']
+
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT mood, timestamp 
+        FROM mood_history 
+        WHERE user_id = ?
+        ORDER BY timestamp ASC
+    """, (user_id,))
+
+    rows = cur.fetchall()
+    conn.close()
+
+    # Convert mood to score
+    mood_map = {
+        "happy": 5,
+        "neutral": 3,
+        "stressed": 2,
+        "anxious": 2,
+        "sad": 1,
+        "angry": 1,
+        "lonely": 1
+    }
+
+    moods = []
+    scores = []
+    timestamps = []
+
+    for mood, ts in rows:
+        moods.append(mood)
+        scores.append(mood_map.get(mood, 3))
+        timestamps.append(ts)
+
+    # Trend logic
+    if len(scores) >= 3:
+        recent_avg = sum(scores[-3:]) / 3
+        overall_avg = sum(scores) / len(scores)
+        if recent_avg > overall_avg:
+            trend = "Improving 📈"
+        elif recent_avg < overall_avg:
+            trend = "Declining 📉"
+        else:
+            trend = "Stable ➖"
+    else:
+        trend = "Not enough data"
+
+    avg = round(sum(scores)/len(scores), 2) if scores else 0
+
+    return jsonify({
+        "moods": moods,
+        "scores": scores,
+        "timestamps": timestamps,
+        "trend": trend,
+        "average": avg
+    })
 # ================= RUN =================
 if __name__ == "__main__":
     app.run(debug=False)
