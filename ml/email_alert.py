@@ -11,6 +11,9 @@ EMAIL_PASS = os.getenv("EMAIL_PASS")
 
 def send_heart_rate_alert(user_email, heart_rate):
 
+    if not user_email:
+        return
+
     subject = "⚠️ Stress Alert: Sudden Heart Rate Spike Detected"
 
     body = f"""
