@@ -4,7 +4,11 @@ from datetime import datetime, timedelta
 from urllib.parse import urlencode
 from dotenv import load_dotenv
 from flask import jsonify
+import sys
+import os
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from rag.retriever import retrieve_context
 
 # ================= ENV =================
 load_dotenv()
@@ -393,6 +397,7 @@ def google_callback():
     print(f"Inserted {inserted_count} heart rate records")
 
     return redirect(url_for("dashboard"))
+
 # Chatbot
 @app.route("/chat", methods=["POST"])
 def chat():
@@ -407,6 +412,7 @@ def chat():
 
     # ✅ NEW: Get user_id from session
     user_id = session.get("user_id")
+    current_stress_level = None
 
     # ✅ NEW: Save mood (only if user is logged in)
     if user_id:
@@ -428,6 +434,16 @@ def chat():
                 VALUES (?, ?)
             """, (user_id, mood))
 
+        # Fetch latest stress level
+        cur.execute("""
+            SELECT stress_level FROM stress_history
+            WHERE user_id = ?
+            ORDER BY timestamp DESC LIMIT 1
+        """, (user_id,))
+        stress_row = cur.fetchone()
+        if stress_row:
+            current_stress_level = stress_row[0]
+
         conn.commit()
         conn.close()
 
@@ -440,12 +456,16 @@ def chat():
 
     chat_history.append({
         "role": "user",
-        "content": f"(User mood: {mood}) {user_message}"
+        "content": user_message
     })
 
     chat_history = chat_history[-10:]
 
-    response = generate_chat_response(chat_history)
+    response = generate_chat_response(
+        chat_history,
+        mood=mood,
+        stress_level=current_stress_level
+    )
 
     chat_history.append({
         "role": "assistant",

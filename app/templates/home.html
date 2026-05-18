@@ -3,55 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workplace Mind | AI-Powered Stress Monitoring</title>
+    <title>Workplace Mind | AI-Powered Mental Wellness</title>
+    <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4A90E2;
-            --primary-hover: #3A7BC8;
-            --secondary: #E8F1FA;
-            --bg-color: #F5F7FA;
-            --text-main: #2D3436;
-            --text-muted: #636e72;
-            --card-bg: #FFFFFF;
-            --shadow-sm: 0 4px 6px rgba(0, 0, 0, 0.02);
-            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.05);
-            --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.08);
+            --bg-base: #070B14;
+            --bg-surface: rgba(15, 23, 42, 0.65);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            
+            --primary: #3b82f6;
+            --primary-glow: rgba(59, 130, 246, 0.5);
+            --purple-accent: #8b5cf6;
+            --cyan-accent: #06b6d4;
+            
+            --text-main: #F8FAFC;
+            --text-muted: #94A3B8;
+            --text-dark: #0F172A;
+            
             --radius-md: 12px;
             --radius-lg: 20px;
+            --radius-xl: 30px;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg-color);
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(circle at 20% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.1) 0%, transparent 50%);
+            background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
             padding: 0;
             line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Glowing Background Orbs */
+        .ambient-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.4;
+            pointer-events: none;
+            z-index: 0;
+            animation: pulseOrb 10s infinite alternate ease-in-out;
+        }
+        .orb-1 {
+            top: -100px;
+            left: -100px;
+            width: 500px;
+            height: 500px;
+            background: var(--primary);
+        }
+        .orb-2 {
+            top: 40%;
+            right: -150px;
+            width: 600px;
+            height: 600px;
+            background: var(--purple-accent);
+            animation-delay: -3s;
+        }
+        .orb-3 {
+            bottom: -100px;
+            left: 20%;
+            width: 550px;
+            height: 550px;
+            background: var(--cyan-accent);
+            animation-delay: -6s;
+        }
+
+        @keyframes pulseOrb {
+            0% { transform: scale(1) translateY(0); opacity: 0.3; }
+            100% { transform: scale(1.2) translateY(30px); opacity: 0.5; }
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1280px;
             margin: 0 auto;
             padding: 0 24px;
+            position: relative;
+            z-index: 10;
         }
 
         /* Navbar */
         .navbar {
-            padding: 24px 0;
+            padding: 20px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 40px;
         }
 
         .nav-brand {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
-            color: var(--primary);
+            color: var(--text-main);
             text-decoration: none;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-brand svg {
+            width: 32px;
+            height: 32px;
+            color: var(--cyan-accent);
+            filter: drop-shadow(0 0 8px rgba(6, 182, 212, 0.6));
         }
 
         .nav-links {
@@ -61,169 +125,456 @@
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 12px 26px;
             border-radius: var(--radius-md);
             font-weight: 600;
             font-size: 15px;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(12px);
         }
 
         .btn-outline {
             color: var(--text-main);
-            background: transparent;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
         }
         
         .btn-outline:hover {
-            color: var(--primary);
-            background: var(--secondary);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         .btn-primary {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--purple-accent));
             color: white;
-            box-shadow: 0 4px 15px rgba(74, 144, 226, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px var(--primary-glow);
         }
 
         .btn-primary:hover {
-            background: var(--primary-hover);
+            background: linear-gradient(135deg, #60a5fa, #a855f7);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(74, 144, 226, 0.3);
+            box-shadow: 0 8px 28px rgba(139, 92, 246, 0.6);
         }
 
-        /* Hero Section */
+        /* Hero Section - Split Layout */
         .hero {
-            padding: 100px 0 80px 0;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
+            padding: 60px 0 120px 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        @media (max-width: 1024px) {
+            .hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 40px;
+                padding: 40px 0 80px 0;
+            }
+            .hero-content {
+                max-width: 700px;
+                margin: 0 auto;
+            }
+            .hero-actions {
+                justify-content: center;
+            }
+            .hero-visual {
+                margin: 0 auto;
+            }
         }
 
         .hero-badge {
-            display: inline-block;
-            background: var(--secondary);
-            color: var(--primary);
-            padding: 6px 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+            padding: 8px 18px;
             border-radius: 30px;
             font-size: 14px;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+        }
+
+        .hero-badge span {
+            width: 8px;
+            height: 8px;
+            background-color: var(--cyan-accent);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--cyan-accent);
+            animation: pulseDot 2s infinite;
+        }
+
+        @keyframes pulseDot {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
         }
 
         .hero h1 {
-            font-size: 56px;
+            font-size: 58px;
             font-weight: 800;
-            line-height: 1.2;
+            line-height: 1.15;
             margin: 0 0 24px 0;
-            color: #1a1e21;
-            letter-spacing: -1px;
+            color: var(--text-main);
+            letter-spacing: -1.5px;
+            background: linear-gradient(180deg, #FFFFFF 0%, #BAC7D5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .hero p {
             font-size: 20px;
             color: var(--text-muted);
             margin: 0 0 40px 0;
+            font-weight: 400;
+            line-height: 1.7;
         }
 
         .hero-actions {
             display: flex;
             gap: 16px;
-            justify-content: center;
         }
 
         .btn-large {
-            padding: 16px 32px;
+            padding: 16px 36px;
             font-size: 16px;
+        }
+
+        /* Hero Right Side - Interactive Visual / Dashboard Preview */
+        .hero-visual {
+            position: relative;
+            width: 100%;
+            max-width: 580px;
+            height: 480px;
+        }
+
+        .mockup-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--glass-shadow);
+            padding: 28px;
+            position: absolute;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mockup-main {
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 320px;
+            z-index: 2;
+            animation: floatSlow 8s infinite alternate ease-in-out;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(59, 130, 246, 0.15);
+        }
+
+        .mockup-main:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .mockup-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .mockup-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mockup-title svg {
+            color: var(--primary);
+        }
+
+        .mockup-tag {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            font-weight: 600;
+        }
+
+        /* Mockup Chart Animation */
+        .mockup-chart {
+            height: 160px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            padding-top: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, var(--primary) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border-radius: 6px 6px 0 0;
+            animation: barGrow 3s infinite alternate ease-in-out;
+            border-top: 2px solid #60a5fa;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .chart-bar:nth-child(1) { height: 40%; animation-delay: 0.2s; }
+        .chart-bar:nth-child(2) { height: 65%; animation-delay: 0.4s; background: linear-gradient(180deg, var(--purple-accent) 0%, rgba(139, 92, 246, 0.1) 100%); border-top-color: #c084fc; box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); }
+        .chart-bar:nth-child(3) { height: 50%; animation-delay: 0.6s; }
+        .chart-bar:nth-child(4) { height: 85%; animation-delay: 0.8s; background: linear-gradient(180deg, var(--cyan-accent) 0%, rgba(6, 182, 212, 0.1) 100%); border-top-color: #22d3ee; box-shadow: 0 0 15px rgba(6, 182, 212, 0.3); }
+        .chart-bar:nth-child(5) { height: 30%; animation-delay: 1.0s; }
+        .chart-bar:nth-child(6) { height: 45%; animation-delay: 1.2s; }
+
+        @keyframes barGrow {
+            0% { transform: scaleY(0.8); transform-origin: bottom; }
+            100% { transform: scaleY(1.1); transform-origin: bottom; }
+        }
+
+        /* Floating Health Metric Card */
+        .mockup-float-1 {
+            bottom: 30px;
+            left: -20px;
+            width: 240px;
+            z-index: 3;
+            animation: floatMedium 6s infinite alternate ease-in-out;
+            background: rgba(15, 23, 42, 0.85);
+            border-left: 4px solid var(--cyan-accent);
+        }
+
+        .metric-mini {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .metric-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 14px;
+            background: rgba(6, 182, 212, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cyan-accent);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+        }
+
+        .metric-info h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .metric-info p {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1;
+        }
+
+        /* AI Assistant Preview Card */
+        .mockup-float-2 {
+            bottom: 60px;
+            right: -20px;
+            width: 260px;
+            z-index: 3;
+            animation: floatFast 7s infinite alternate ease-in-out;
+            background: rgba(15, 23, 42, 0.85);
+            border-left: 4px solid var(--purple-accent);
+        }
+
+        .ai-preview {
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .ai-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--purple-accent));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: white;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+            flex-shrink: 0;
+        }
+
+        .ai-msg h4 {
+            margin: 0 0 4px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: #c084fc;
+        }
+
+        .ai-msg p {
+            margin: 0;
+            font-size: 13px;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+
+        @keyframes floatSlow {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-12px); }
+        }
+        @keyframes floatMedium {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(15px) rotate(-2deg); }
+        }
+        @keyframes floatFast {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-18px) rotate(2deg); }
         }
 
         /* Common Section Styles */
         .section {
-            padding: 80px 0;
+            padding: 100px 0;
+            position: relative;
         }
 
         .section-header {
             text-align: center;
-            margin-bottom: 60px;
-            max-width: 600px;
+            margin-bottom: 70px;
+            max-width: 700px;
             margin-left: auto;
             margin-right: auto;
         }
 
         .section-title {
-            font-size: 32px;
-            font-weight: 700;
-            margin: 0 0 16px 0;
-            color: #1a1e21;
+            font-size: 38px;
+            font-weight: 800;
+            margin: 0 0 20px 0;
+            color: var(--text-main);
+            letter-spacing: -1px;
+            background: linear-gradient(180deg, #FFFFFF 0%, #BAC7D5 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .section-subtitle {
             font-size: 18px;
             color: var(--text-muted);
             margin: 0;
+            line-height: 1.7;
         }
 
         /* Features Section */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
+            gap: 28px;
         }
 
-        @media (max-width: 992px) {
+        @media (max-width: 1024px) {
             .features-grid { grid-template-columns: repeat(2, 1fr); }
         }
 
-        @media (max-width: 600px) {
+        @media (max-width: 640px) {
             .features-grid { grid-template-columns: 1fr; }
         }
 
         .feature-card {
-            background: var(--card-bg);
-            padding: 40px 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 44px 32px;
             border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-md);
-            transition: all 0.3s ease;
+            box-shadow: var(--glass-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             text-align: center;
-            border: 1px solid rgba(0,0,0,0.02);
+            border: 1px solid var(--glass-border);
             height: 100%;
             box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            opacity: 0;
+            transition: opacity 0.4s;
         }
 
         .feature-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-10px);
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 25px rgba(59, 130, 246, 0.15);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
         }
 
         .feature-icon {
-            width: 64px;
-            height: 64px;
-            background: var(--secondary);
+            width: 70px;
+            height: 70px;
+            background: rgba(59, 130, 246, 0.1);
             color: var(--primary);
-            border-radius: 20px;
+            border-radius: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 24px auto;
+            margin: 0 auto 28px auto;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+            transition: all 0.4s;
         }
         
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 25px var(--primary-glow);
+        }
+
         .feature-icon svg {
-            width: 32px;
-            height: 32px;
+            width: 34px;
+            height: 34px;
         }
 
         .feature-card h3 {
-            font-size: 20px;
-            margin: 0 0 12px 0;
-            color: #1a1e21;
+            font-size: 22px;
+            margin: 0 0 16px 0;
+            color: var(--text-main);
+            font-weight: 700;
         }
 
         .feature-card p {
             color: var(--text-muted);
             margin: 0;
             font-size: 15px;
+            line-height: 1.7;
         }
 
         /* How it works */
@@ -232,23 +583,24 @@
             justify-content: space-between;
             align-items: flex-start;
             position: relative;
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
         }
         
         .steps-container::before {
             content: '';
             position: absolute;
-            top: 40px;
-            left: 10%;
-            right: 10%;
+            top: 45px;
+            left: 15%;
+            right: 15%;
             height: 2px;
-            background: #e2e8f0;
+            background: linear-gradient(90deg, var(--primary), var(--purple-accent));
+            opacity: 0.3;
             z-index: 0;
         }
         
         @media (max-width: 768px) {
-            .steps-container { flex-direction: column; gap: 40px; align-items: center; }
+            .steps-container { flex-direction: column; gap: 50px; align-items: center; }
             .steps-container::before { display: none; }
         }
 
@@ -257,73 +609,112 @@
             text-align: center;
             position: relative;
             z-index: 1;
-            padding: 0 20px;
+            padding: 0 24px;
         }
 
         .step-number {
-            width: 80px;
-            height: 80px;
-            background: var(--card-bg);
+            width: 90px;
+            height: 90px;
+            background: var(--bg-base);
             border: 2px solid var(--primary);
             color: var(--primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            font-weight: 700;
-            margin: 0 auto 24px auto;
-            box-shadow: 0 0 0 8px var(--bg-color);
+            font-size: 32px;
+            font-weight: 800;
+            margin: 0 auto 28px auto;
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.2);
+            transition: all 0.4s;
+        }
+
+        .step:hover .step-number {
+            transform: scale(1.1);
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 30px var(--primary-glow);
         }
 
         .step h3 {
-            font-size: 20px;
-            margin: 0 0 12px 0;
+            font-size: 22px;
+            margin: 0 0 16px 0;
+            color: var(--text-main);
+            font-weight: 700;
         }
 
         .step p {
             color: var(--text-muted);
             margin: 0;
+            font-size: 15px;
+            line-height: 1.7;
         }
 
         /* CTA Section */
         .cta-section {
-            background: var(--primary);
-            border-radius: var(--radius-lg);
-            padding: 80px 40px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: var(--radius-xl);
+            padding: 80px 48px;
             text-align: center;
             color: white;
-            margin-bottom: 80px;
+            margin-bottom: 100px;
             position: relative;
             overflow: hidden;
-            box-shadow: var(--shadow-lg);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 40px rgba(139, 92, 246, 0.2);
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1), transparent 60%);
+            animation: rotateBg 15s linear infinite;
+        }
+
+        @keyframes rotateBg {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
         }
 
         .cta-section h2 {
-            font-size: 40px;
-            font-weight: 700;
+            font-size: 44px;
+            font-weight: 800;
             margin: 0 0 24px 0;
+            letter-spacing: -1px;
         }
 
         .cta-section p {
             font-size: 20px;
-            opacity: 0.9;
+            color: rgba(255, 255, 255, 0.85);
             margin: 0 0 40px 0;
-            max-width: 600px;
+            max-width: 650px;
             margin-left: auto;
             margin-right: auto;
+            line-height: 1.7;
         }
 
         .btn-white {
             background: white;
-            color: var(--primary);
+            color: var(--text-dark);
             font-weight: 700;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .btn-white:hover {
-            background: #f8f9fa;
+            background: #F1F5F9;
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 15px 30px rgba(255, 255, 255, 0.3);
         }
 
         /* Footer */
@@ -331,17 +722,23 @@
             text-align: center;
             padding: 40px 0;
             color: var(--text-muted);
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
+    <!-- Ambient Glow Orbs -->
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+
     <div class="container">
         <!-- Navbar -->
         <nav class="navbar">
             <a href="/" class="nav-brand">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
                 </svg>
                 Workplace Mind
@@ -354,20 +751,73 @@
 
         <!-- Hero Section -->
         <section class="hero">
-            <div class="hero-badge">Mental Well-being System</div>
-            <h1>AI-Powered Stress Monitoring & Emotional Support</h1>
-            <p>Empower your mental health with intelligent tracking, deep emotional insights, and a responsive support chatbot whenever you need it.</p>
-            <div class="hero-actions">
-                <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">Get Started</a>
-                <a href="{{ url_for('login') }}" class="btn btn-outline btn-large" style="background: white; border: 1px solid #e2e8f0;">Log in</a>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span></span> AI-Powered Mental Well-being Platform
+                </div>
+                <h1>Intelligence meeting emotional support.</h1>
+                <p>Empower your workplace mental health with real-time physiological tracking, deep emotional insights, and an empathetic AI companion available 24/7.</p>
+                <div class="hero-actions">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-large">Get Started</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline btn-large">Live Demo</a>
+                </div>
+            </div>
+
+            <!-- Hero Right Side Visual -->
+            <div class="hero-visual">
+                <!-- Main Mockup Card -->
+                <div class="mockup-card mockup-main">
+                    <div class="mockup-header">
+                        <div class="mockup-title">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                            Stress Analytics
+                        </div>
+                        <div class="mockup-tag">Stable ✅</div>
+                    </div>
+                    <p style="margin: 0; font-size: 28px; font-weight: 800; color: var(--text-main);">24 <span style="font-size: 16px; font-weight: 500; color: var(--text-muted);">/ 60 pts</span></p>
+                    <p style="margin: 4px 0 0 0; font-size: 13px; color: #34d399;">↓ 12% improvement from last week</p>
+                    
+                    <div class="mockup-chart">
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                        <div class="chart-bar"></div>
+                    </div>
+                </div>
+
+                <!-- Floating Metric 1: Heart Rate -->
+                <div class="mockup-card mockup-float-1">
+                    <div class="metric-mini">
+                        <div class="metric-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                        </div>
+                        <div class="metric-info">
+                            <h4>Google Fit Sync</h4>
+                            <p>72 <span style="font-size: 14px; color: var(--text-muted);">BPM</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Floating Metric 2: AI Companion -->
+                <div class="mockup-card mockup-float-2">
+                    <div class="ai-preview">
+                        <div class="ai-avatar">AI</div>
+                        <div class="ai-msg">
+                            <h4>Mind Assistant</h4>
+                            <p>I noticed your stress levels are balancing out beautifully today. Keep up the great pace!</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
         <!-- Features Section -->
         <section class="section">
             <div class="section-header">
-                <h2 class="section-title">Everything you need for peace of mind</h2>
-                <p class="section-subtitle">Advanced tools carefully designed to elevate your workplace well-being.</p>
+                <h2 class="section-title">Engineered for absolute peace of mind</h2>
+                <p class="section-subtitle">State-of-the-art tools seamlessly combining machine learning with clinical wellness principles.</p>
             </div>
             
             <div class="features-grid">
@@ -379,7 +829,7 @@
                         </svg>
                     </div>
                     <h3>Stress Detection</h3>
-                    <p>Machine learning algorithms analyze your responses to accurately detect hidden stress patterns.</p>
+                    <p>Advanced machine learning algorithms analyze your responses to detect subtle, hidden stress patterns instantly.</p>
                 </div>
                 
                 <!-- Feature 2 -->
@@ -393,7 +843,7 @@
                         </svg>
                     </div>
                     <h3>Mood Tracking</h3>
-                    <p>Log your emotional state and uncover long-term trends affecting your workplace wellness.</p>
+                    <p>Continuously log your emotional state to uncover profound long-term trends affecting your workplace productivity.</p>
                 </div>
 
                 <!-- Feature 3 -->
@@ -403,8 +853,8 @@
                             <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                         </svg>
                     </div>
-                    <h3>Heart Rate Monitor</h3>
-                    <p>Connect Google Fit to automatically sync your essential physiological metrics directly.</p>
+                    <h3>Google Fit Sync</h3>
+                    <p>Connect your Google Fit account to automatically pull real-time heart rate and physiological biometrics.</p>
                 </div>
 
                 <!-- Feature 4 -->
@@ -415,7 +865,7 @@
                         </svg>
                     </div>
                     <h3>Support Chatbot</h3>
-                    <p>Have a judgment-free conversation anytime with an empathetic AI assistant by your side.</p>
+                    <p>Engage in a judgment-free, therapeutic conversation anytime with an empathetic AI assistant by your side.</p>
                 </div>
             </div>
         </section>
@@ -423,41 +873,43 @@
         <!-- How it works -->
         <section class="section">
             <div class="section-header">
-                <h2 class="section-title">How it works</h2>
-                <p class="section-subtitle">Three simple steps to build a healthier mind.</p>
+                <h2 class="section-title">How Workplace Mind works</h2>
+                <p class="section-subtitle">Three elegant steps to achieve and maintain a healthier cognitive balance.</p>
             </div>
             
             <div class="steps-container">
                 <div class="step">
                     <div class="step-number">1</div>
                     <h3>Take Assessment</h3>
-                    <p>Answer a few quick questions about your workload and feelings to log your current state.</p>
+                    <p>Answer a curated set of questions regarding your workload, deadlines, and emotional state to log your baseline.</p>
                 </div>
                 
                 <div class="step">
                     <div class="step-number">2</div>
-                    <h3>System Analyzes</h3>
-                    <p>Our ML model cross-references your inputs with physical data to assess stress levels.</p>
+                    <h3>Intelligent Analysis</h3>
+                    <p>Our machine learning model evaluates your cognitive load and cross-references it with live biometric data.</p>
                 </div>
                 
                 <div class="step">
                     <div class="step-number">3</div>
-                    <h3>Get Insights & Support</h3>
-                    <p>Receive immediate actionable feedback, trend data, and helpful resources tailored to you.</p>
+                    <h3>Actionable Insights</h3>
+                    <p>Receive immediate, personalized feedback, continuous trend tracking, and empathetic AI chat support.</p>
                 </div>
             </div>
         </section>
 
         <!-- CTA Section -->
         <section class="cta-section">
-            <h2>Start taking control of your mental well-being</h2>
-            <p>Join today to proactively manage stress and cultivate a healthier work-life balance.</p>
-            <a href="{{ url_for('register') }}" class="btn btn-large btn-white">Get Started</a>
+            <div class="cta-content">
+                <h2>Start taking control of your mental well-being</h2>
+                <p>Join thousands of professionals proactively managing workplace stress and cultivating a healthier work-life harmony.</p>
+                <a href="{{ url_for('register') }}" class="btn btn-large btn-white">Get Started Now</a>
+            </div>
         </section>
         
         <!-- Footer -->
         <footer>
-            <p>&copy; 2026 Workplace Mind Stress Monitor. All rights reserved.</p>
+            <p>&copy; 2026 Workplace Mind AI Stress Monitor. All rights reserved.</p>
         </footer>
     </div>
 

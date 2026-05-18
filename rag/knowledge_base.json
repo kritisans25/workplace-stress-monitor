@@ -1,0 +1,331 @@
+[
+    {
+        "topic": "work stress",
+        "keywords": [
+            "deadline",
+            "pressure",
+            "overwhelmed",
+            "workload"
+        ],
+        "content": "Heavy workloads and constant pressure can gradually increase emotional fatigue and mental exhaustion. Taking short recovery breaks and prioritizing tasks may help reduce cognitive strain during stressful work periods.",
+        "support_style": "reassuring"
+    },
+    {
+        "topic": "anxiety",
+        "keywords": [
+            "anxious",
+            "panic",
+            "nervous",
+            "fear"
+        ],
+        "content": "Anxiety during stressful situations can create racing thoughts, tension, and emotional discomfort. Slowing down, grounding yourself, and focusing on one thing at a time may help reduce overwhelming feelings.",
+        "support_style": "calming"
+    },
+    {
+        "topic": "burnout",
+        "keywords": [
+            "burnout",
+            "exhausted",
+            "drained",
+            "tired"
+        ],
+        "content": "Burnout often develops gradually through prolonged stress, emotional exhaustion, and lack of recovery time. Consistent rest and emotional support are important during periods of burnout.",
+        "support_style": "empathetic"
+    },
+    {
+        "topic": "loneliness",
+        "keywords": [
+            "alone",
+            "isolated",
+            "lonely"
+        ],
+        "content": "Feeling emotionally isolated at work can increase stress levels and reduce emotional resilience. Meaningful conversations and support from trusted people can sometimes ease feelings of loneliness.",
+        "support_style": "supportive"
+    },
+    {
+        "topic": "deadline pressure",
+        "keywords": [
+            "deadline",
+            "urgent",
+            "submission",
+            "late"
+        ],
+        "content": "Constant deadline pressure can create mental overload and emotional tension. Breaking tasks into smaller steps may help make intense workloads feel more manageable.",
+        "support_style": "motivational"
+    },
+    {
+        "topic": "multitasking fatigue",
+        "keywords": [
+            "multitasking",
+            "many tasks",
+            "switching",
+            "busy"
+        ],
+        "content": "Frequent task switching can increase mental fatigue and reduce concentration. Focusing on one task at a time may improve clarity and reduce stress.",
+        "support_style": "calming"
+    },
+    {
+        "topic": "sleep deprivation",
+        "keywords": [
+            "sleep",
+            "insomnia",
+            "awake",
+            "restless"
+        ],
+        "content": "Lack of sleep can increase irritability, stress sensitivity, and difficulty concentrating. Even small improvements in rest and recovery may positively affect emotional well-being.",
+        "support_style": "gentle"
+    },
+    {
+        "topic": "emotional exhaustion",
+        "keywords": [
+            "emotionally tired",
+            "numb",
+            "empty",
+            "drained"
+        ],
+        "content": "Emotional exhaustion can make everyday responsibilities feel heavier than usual. Taking moments to pause and recharge emotionally can sometimes help reduce overwhelm.",
+        "support_style": "empathetic"
+    },
+    {
+        "topic": "imposter syndrome",
+        "keywords": [
+            "not good enough",
+            "fraud",
+            "self doubt",
+            "imposter"
+        ],
+        "content": "Imposter syndrome can make capable people feel undeserving of success. Self-doubt is often more connected to pressure and expectations than actual ability.",
+        "support_style": "reassuring"
+    },
+    {
+        "topic": "fear of failure",
+        "keywords": [
+            "failure",
+            "mistake",
+            "fear",
+            "losing"
+        ],
+        "content": "Fear of failure can increase stress and hesitation during important tasks. Growth often comes from learning through difficult experiences rather than avoiding them.",
+        "support_style": "encouraging"
+    },
+    {
+        "topic": "meeting overload",
+        "keywords": [
+            "meetings",
+            "calls",
+            "zoom",
+            "discussions"
+        ],
+        "content": "Continuous meetings without recovery time can contribute to mental fatigue and reduced focus. Small breaks between discussions may help restore concentration.",
+        "support_style": "supportive"
+    },
+    {
+        "topic": "work-life imbalance",
+        "keywords": [
+            "balance",
+            "personal life",
+            "work life",
+            "overworking"
+        ],
+        "content": "When work consistently takes priority over rest and personal time, emotional fatigue can slowly build up. Protecting recovery time is important for long-term well-being.",
+        "support_style": "gentle"
+    },
+    {
+        "topic": "low motivation",
+        "keywords": [
+            "unmotivated",
+            "lazy",
+            "stuck",
+            "demotivated"
+        ],
+        "content": "Periods of low motivation are common during stress and emotional fatigue. Starting with small manageable actions may help rebuild momentum gradually.",
+        "support_style": "motivational"
+    },
+    {
+        "topic": "difficulty concentrating",
+        "keywords": [
+            "focus",
+            "concentration",
+            "distracted",
+            "attention"
+        ],
+        "content": "Stress and mental overload can reduce concentration and make tasks feel harder than usual. Reducing distractions and slowing the pace may help improve focus.",
+        "support_style": "calming"
+    },
+    {
+        "topic": "productivity guilt",
+        "keywords": [
+            "productive",
+            "guilt",
+            "doing enough",
+            "unproductive"
+        ],
+        "content": "Feeling guilty for resting or slowing down can increase emotional pressure. Recovery and rest are important parts of maintaining long-term productivity.",
+        "support_style": "reassuring"
+    },
+    {
+        "topic": "social pressure",
+        "keywords": [
+            "expectations",
+            "judged",
+            "people",
+            "pressure"
+        ],
+        "content": "Social expectations and fear of judgment can create emotional stress and self-consciousness. It may help to focus on personal growth rather than constant comparison.",
+        "support_style": "supportive"
+    },
+    {
+        "topic": "heart rate stress",
+        "keywords": [
+            "heart rate",
+            "bpm",
+            "fast heartbeat",
+            "pulse"
+        ],
+        "content": "Elevated heart rate during stressful periods can sometimes reflect emotional tension and mental strain. Slowing breathing and taking a brief pause may help calm the body.",
+        "support_style": "calming"
+    },
+    {
+        "topic": "mental fatigue",
+        "keywords": [
+            "mental fatigue",
+            "brain fog",
+            "foggy",
+            "thinking"
+        ],
+        "content": "Mental fatigue can make thinking clearly and making decisions more difficult. Short recovery periods and reduced overload may help restore clarity.",
+        "support_style": "gentle"
+    },
+    {
+        "topic": "stress recovery",
+        "keywords": [
+            "recover",
+            "rest",
+            "healing",
+            "relax"
+        ],
+        "content": "Recovery from stress often happens gradually through rest, emotional support, and consistent self-care habits rather than immediate changes.",
+        "support_style": "encouraging"
+    },
+    {
+        "topic": "self criticism",
+        "keywords": [
+            "criticizing myself",
+            "harsh",
+            "blaming myself",
+            "worthless"
+        ],
+        "content": "Being overly critical of yourself during stressful moments can increase emotional exhaustion. Speaking to yourself with patience and understanding may reduce unnecessary pressure.",
+        "support_style": "empathetic"
+    },
+    {
+        "topic": "career uncertainty",
+        "keywords": [
+            "career",
+            "future",
+            "confused",
+            "direction"
+        ],
+        "content": "Uncertainty about career growth or future plans can create emotional tension and self-doubt. Feeling uncertain does not mean you are failing or falling behind.",
+        "support_style": "reassuring"
+    },
+    {
+        "topic": "feeling undervalued",
+        "keywords": [
+            "unappreciated",
+            "ignored",
+            "undervalued",
+            "not recognized"
+        ],
+        "content": "Feeling unnoticed or undervalued at work can affect motivation and emotional well-being. Recognition and support often play an important role in workplace satisfaction.",
+        "support_style": "supportive"
+    },
+    {
+        "topic": "communication stress",
+        "keywords": [
+            "argument",
+            "conflict",
+            "misunderstood",
+            "communication"
+        ],
+        "content": "Stressful communication and unresolved conflict can increase emotional tension. Calm and honest conversations may sometimes help reduce misunderstandings.",
+        "support_style": "calming"
+    },
+    {
+        "topic": "panic during workload",
+        "keywords": [
+            "panic",
+            "too much",
+            "can't handle",
+            "breakdown"
+        ],
+        "content": "Feeling overwhelmed by responsibilities can trigger panic and emotional overload. Slowing down and focusing on one immediate step may help reduce pressure.",
+        "support_style": "grounding"
+    },
+    {
+        "topic": "lack of confidence",
+        "keywords": [
+            "confidence",
+            "insecure",
+            "not capable",
+            "weak"
+        ],
+        "content": "Stress can sometimes reduce confidence and make challenges feel larger than they are. Progress often happens even during periods of uncertainty.",
+        "support_style": "encouraging"
+    },
+    {
+        "topic": "mindfulness",
+        "keywords": [
+            "mindfulness",
+            "present",
+            "awareness",
+            "calm"
+        ],
+        "content": "Mindfulness practices can sometimes help reduce emotional overwhelm by gently bringing attention back to the present moment.",
+        "support_style": "calming"
+    },
+    {
+        "topic": "breathing exercises",
+        "keywords": [
+            "breathing",
+            "deep breath",
+            "relax",
+            "calm down"
+        ],
+        "content": "Slow breathing exercises may help calm physical tension and reduce feelings of stress during emotionally difficult moments.",
+        "support_style": "grounding"
+    },
+    {
+        "topic": "taking breaks",
+        "keywords": [
+            "break",
+            "pause",
+            "rest",
+            "step away"
+        ],
+        "content": "Short breaks during intense work sessions may help reduce mental fatigue and improve emotional recovery.",
+        "support_style": "gentle"
+    },
+    {
+        "topic": "physical fatigue",
+        "keywords": [
+            "physically tired",
+            "weak",
+            "fatigue",
+            "energy"
+        ],
+        "content": "Physical exhaustion and emotional stress often influence each other. Rest, hydration, and recovery can support overall well-being.",
+        "support_style": "supportive"
+    },
+    {
+        "topic": "overthinking",
+        "keywords": [
+            "overthinking",
+            "thinking too much",
+            "ruminating",
+            "stuck thoughts"
+        ],
+        "content": "Overthinking can increase anxiety and emotional exhaustion by keeping the mind focused on stress repeatedly. Redirecting attention gently may help interrupt this cycle.",
+        "support_style": "calming"
+    }
+]
